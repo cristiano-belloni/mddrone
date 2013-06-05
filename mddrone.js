@@ -11,6 +11,34 @@ define(['require', 'kievII', 'image', 'font'], function(require, K2) {
             width: 274,
             height: 180
         },
+        hostParameters : {
+            enabled: false,
+            parameters: {
+                noteParm: {
+                    name: 'Note',
+                    range: {
+                        min: 40,
+                        default: 44,
+                        max: 100
+                    },
+                    groupID: 'fxControls'
+                },
+                voiceParm: {
+                    name: 'Voices',
+                    range: {
+                        min: 1,
+                        default: 14,
+                        max: 40
+                    },
+                    groupID: 'fxControls'
+                }
+            },
+            groups: {
+                fxControls: {
+                    name: 'FX Controls'
+                }
+            }
+        }
     };
   
     var pluginFunction = function (args, resources) {
@@ -71,7 +99,7 @@ define(['require', 'kievII', 'image', 'font'], function(require, K2) {
             this.panner.setPosition(x, y, z);
           }.bind(this), 500);
         
-        }
+        };
         
         this.scale = [0.0, 2.0, 4.0, 6.0, 7.0, 9.0, 11.0, 12.0, 14.0];
         
@@ -102,7 +130,7 @@ define(['require', 'kievII', 'image', 'font'], function(require, K2) {
             this.noiseFilters.pop().disconnect();
           }
           this.generate();
-        }
+        };
         
         this.generateWithParams = function(note, voices) {
             if (typeof voices === 'number') {
@@ -112,7 +140,7 @@ define(['require', 'kievII', 'image', 'font'], function(require, K2) {
                 this.nOsc = voices;
             }
             this.reset();
-        }
+        };
         
         this.changeNote = function(note) {
             
@@ -132,48 +160,49 @@ define(['require', 'kievII', 'image', 'font'], function(require, K2) {
                 this.noiseFilters[i].frequency.value = freq;
             }
             
-        }
+        };
         
         this.changeVoices = function(voices) {
             this.nOsc = voices;
             this.reset();
-        }
-        
-        //this.generate();
-        
-        /*this.sign = "plus";
-        var testFunc = function () {
-            if (this.baseNote === 100) {
-                this.sign = "minus";
-            }
-            if (this.baseNote === 40) {
-                this.sign = "plus";
-            }
-            if (this.sign === "plus") {
-                console.log ("changing note to", this.baseNote + 1);
-                this.changeNote (this.baseNote + 1);
-            }
-            if (this.sign === "minus") {
-                console.log ("changing note to", this.baseNote - 1);
-                this.changeNote (this.baseNote - 1);
-            } 
+        };
+
+        this.noteCallback = function(noteValue) {
+            this.changeNote (noteValue);
         }.bind(this);
-        
-        setInterval (testFunc, 300);*/
-       
-       // The UI
-       this.ui = new K2.UI ({type: 'CANVAS2D', target: args.canvas});
-        
-       this.viewWidth = args.canvas.width;
-       this.viewHeight = args.canvas.height;
+
+        this.voiceCallback = function(voiceValue) {
+            this.changeVoices (voiceValue);
+        }.bind(this);
+
+        /* Parameter callbacks */
+        this.onParmChange = function (id, value) {
+            if (id === 'noteParm') {
+                this.noteCallback (value);
+            }
+            else if (id === 'voiceParm') {
+                this.voiceCallback (value);
+            }
+
+        }
+
+        if (pluginConf.hostParameters.enabled === true) {
+            return;
+        }
+
+        /**********
+         * The UI *
+         * ********/
+
+        this.ui = new K2.UI ({type: 'CANVAS2D', target: args.canvas});
 	   
-       /* deck */
-      var bgArgs = new K2.Background({
+        /* Deck */
+        var bgArgs = new K2.Background({
            ID: 'background',
            image: deckImage,
            top: 0,
            left: 0
-       });
+        });
     
        this.ui.addElement(bgArgs, {zIndex: 0});
        
@@ -188,7 +217,7 @@ define(['require', 'kievII', 'image', 'font'], function(require, K2) {
             top: 57,
             onValueSet: function(slot, value) {            
                 var noteValue = Math.round(K2.MathUtils.linearRange(0, 1, 40, 100, value));
-                this.changeNote (noteValue);
+                this.noteCallback (noteValue);
                 this.ui.refresh();
             }.bind(this),
             isListening : true
@@ -205,7 +234,7 @@ define(['require', 'kievII', 'image', 'font'], function(require, K2) {
                 top: 57,
                 onValueSet : function(slot, value) {            
                     var voiceValue = Math.round(K2.MathUtils.linearRange(0, 1, 1, 40, value));
-                    this.changeVoices (voiceValue);
+                    this.voiceCallback (voiceValue);
                     this.ui.refresh();
                 }.bind(this),
                 isListening : true
