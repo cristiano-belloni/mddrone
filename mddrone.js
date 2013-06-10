@@ -12,7 +12,7 @@ define(['require', 'kievII', 'image', 'font'], function(require, K2) {
             height: 180
         },
         hostParameters : {
-            enabled: false,
+            enabled: true,
             parameters: {
                 noteParm: {
                     name: 'Note',
@@ -48,7 +48,7 @@ define(['require', 'kievII', 'image', 'font'], function(require, K2) {
         this.audioDestination = args.audioDestinations[0];
         this.context = args.audioContext;
         var knobImage =  resources[0];
-		    var deckImage =  resources[1];
+		var deckImage =  resources[1];
         
         /* From 40 to 100 */
         this.baseNote = 44;
@@ -187,6 +187,7 @@ define(['require', 'kievII', 'image', 'font'], function(require, K2) {
         }
 
         if (pluginConf.hostParameters.enabled === true) {
+            args.hostInterface.setInstanceStatus ('ready');
             return;
         }
 
@@ -263,6 +264,11 @@ define(['require', 'kievII', 'image', 'font'], function(require, K2) {
   
     var initPlugin = function(initArgs) {
         var args = initArgs;
+
+        if (pluginConf.hostParameters.enabled === true) {
+            pluginFunction.call (this, args, [undefined, undefined]);
+            return;
+        }
 
         var requireErr = function (err) {
             var failedId = err.requireModules && err.requireModules[0];
