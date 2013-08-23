@@ -248,7 +248,7 @@ define(['require', 'kievII', 'image', 'font'], function(require, K2) {
                 ID: "voiceKnob",
                 left: 178,
                 top: 57,
-                onValueSet : function(slot, value, eement) {
+                onValueSet : function(slot, value, element) {
                     this.pluginState[element] = value;            
                     var voiceValue = Math.round(K2.MathUtils.linearRange(0, 1, 1, 40, value));
                     this.voiceCallback (voiceValue);
