@@ -12,7 +12,7 @@ define(['require', 'github:janesconference/KievII@v0.5.0-jspm/dist/kievII'], fun
             height: 180
         },
         hostParameters : {
-            enabled: true,
+            enabled: false,
             parameters: {
                 noteParm: {
                     name: 'Note',
@@ -49,6 +49,19 @@ define(['require', 'github:janesconference/KievII@v0.5.0-jspm/dist/kievII'], fun
         this.context = args.audioContext;
         var knobImage =  resources[0];
 		var deckImage =  resources[1];
+
+
+        if (args.initialState && args.initialState.data) {
+            /* Load data */
+            this.pluginState = args.initialState.data;    
+        }
+        else {
+            /* Use default data */
+            this.pluginState = {
+                noteKnob: 0.44,
+                voiceKnob: 0.4,
+            };
+        }
         
         /* From 40 to 100 */
         this.baseNote = 44;
@@ -177,6 +190,7 @@ define(['require', 'github:janesconference/KievII@v0.5.0-jspm/dist/kievII'], fun
 
         /* Parameter callbacks */
         this.onParmChange = function (id, value) {
+            this.pluginState[id] = value;
             if (id === 'noteParm') {
                 this.noteCallback (value);
             }
@@ -213,10 +227,11 @@ define(['require', 'github:janesconference/KievII@v0.5.0-jspm/dist/kievII'], fun
             tileHeight: 60,
             imageNum: 61,
             bottomAngularOffset: 33,
-            ID: this.name + "noteKnob",
+            ID: "noteKnob",
             left: 38,
             top: 57,
-            onValueSet: function(slot, value) {            
+            onValueSet: function(slot, value, element) {
+                this.pluginState[element] = value;            
                 var noteValue = Math.round(K2.MathUtils.linearRange(0, 1, 40, 100, value));
                 this.noteCallback (noteValue);
                 this.ui.refresh();
@@ -230,10 +245,11 @@ define(['require', 'github:janesconference/KievII@v0.5.0-jspm/dist/kievII'], fun
                 tileHeight: 60,
                 imageNum: 61,
                 bottomAngularOffset: 33,
-                ID: this.name + "voiceKnob",
+                ID: "voiceKnob",
                 left: 178,
                 top: 57,
-                onValueSet : function(slot, value) {            
+                onValueSet : function(slot, value, element) {
+                    this.pluginState[element] = value;            
                     var voiceValue = Math.round(K2.MathUtils.linearRange(0, 1, 1, 40, value));
                     this.voiceCallback (voiceValue);
                     this.ui.refresh();
@@ -246,17 +262,22 @@ define(['require', 'github:janesconference/KievII@v0.5.0-jspm/dist/kievII'], fun
         this.ui.setValue({
             elementID : noteKnobArgs.ID,
             slot : 'knobvalue',
-            value : K2.MathUtils.linearRange(40, 100, 0, 1, 44)
+            value : this.pluginState[noteKnobArgs.ID]
         });
     
         this.ui.addElement(new K2.Knob(voiceKnobArgs));
         this.ui.setValue({
             elementID : voiceKnobArgs.ID,
             slot : 'knobvalue',
-            value : K2.MathUtils.linearRange(1, 40, 0, 1, 14)
+            value : this.pluginState[voiceKnobArgs.ID]
         });
         
         this.ui.refresh();
+
+        var saveState = function () {
+            return { data: this.pluginState };
+        };
+        args.hostInterface.setSaveState (saveState);
 
         // Initialization made it so far: plugin is ready.
         args.hostInterface.setInstanceStatus ('ready');
