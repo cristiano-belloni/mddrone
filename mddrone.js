@@ -1,4 +1,4 @@
-define(['require', 'kievII', 'image', 'font'], function(require, K2) {
+define(['require', 'github:janesconference/KievII@v0.5.0-jspm/dist/kievII'], function(require, K2) {
   
     var pluginConf = {
         name: "Matt D.'s Drone",
@@ -276,8 +276,8 @@ define(['require', 'kievII', 'image', 'font'], function(require, K2) {
             args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
         }.bind(this);
         
-        require (['image!./assets/images/knob_60_60_61f.png!rel',
-                  'image!./assets/images/MDDDeck.png!rel'],
+        require (['./assets/images/knob_60_60_61f.png!image',
+                  './assets/images/MDDDeck.png!image'],
             function () {
                 var resources = arguments;
                 pluginFunction.call (this, args, resources);
