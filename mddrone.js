@@ -4,7 +4,7 @@ define(['require', 'github:janesconference/KievII@jspm0.5/dist/kievII'], functio
         name: "Matt D.'s Drone",
         osc: false,
         audioOut: 1,
-        audioIn: 1,
+        audioIn: 0,
         version: '0.0.1-alpha1',
         ui: {
             type: 'canvas',
