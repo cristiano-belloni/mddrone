@@ -53,7 +53,7 @@ define(['require', 'github:janesconference/KievII@0.6.0/kievII'], function(requi
 
         if (args.initialState && args.initialState.data) {
             /* Load data */
-            this.pluginState = args.initialState.data;    
+            this.pluginState = args.initialState.data;
         }
         else {
             /* Use default data */
@@ -198,7 +198,7 @@ define(['require', 'github:janesconference/KievII@0.6.0/kievII'], function(requi
                 this.voiceCallback (value);
             }
 
-        }
+        };
 
         if (pluginConf.hostParameters.enabled === true) {
             args.hostInterface.setInstanceStatus ('ready');
@@ -210,7 +210,7 @@ define(['require', 'github:janesconference/KievII@0.6.0/kievII'], function(requi
          * ********/
 
         this.ui = new K2.UI ({type: 'CANVAS2D', target: args.canvas});
-	   
+
         /* Deck */
         var bgArgs = new K2.Background({
            ID: 'background',
@@ -220,6 +220,38 @@ define(['require', 'github:janesconference/KievII@0.6.0/kievII'], function(requi
         });
     
        this.ui.addElement(bgArgs, {zIndex: 0});
+
+        /* labels */
+        var freqLabel = new K2.Label({
+            ID: 'freqLabel',
+            width : 100,
+            height : 20,
+            top : 127,
+            left : 28,
+            transparency: 0.87,
+            objParms: {
+                font: "20px VT323",
+                textColor: "#000",
+                textBaseline: "top",
+                textAlignment: "left"
+            }
+        });
+        var voiceLabel = new K2.Label({
+            ID: 'voiceLabel',
+            width : 100,
+            height : 20,
+            top : 127,
+            left : 168,
+            transparency: 0.87,
+            objParms: {
+                font: "20px VT323",
+                textColor: "#000",
+                textBaseline: "top",
+                textAlignment: "left"
+            }
+        });
+        this.ui.addElement(freqLabel, {zIndex: 3});
+        this.ui.addElement(voiceLabel, {zIndex: 3});
        
        var noteKnobArgs = {
             imagesArray : [knobImage],
@@ -231,9 +263,16 @@ define(['require', 'github:janesconference/KievII@0.6.0/kievII'], function(requi
             left: 38,
             top: 57,
             onValueSet: function(slot, value, element) {
-                this.pluginState[element] = value;            
+                this.pluginState[element] = value;
                 var noteValue = Math.round(K2.MathUtils.linearRange(0, 1, 40, 100, value));
                 this.noteCallback (noteValue);
+                var padVaule = (noteValue >= 100) ? '' : ' ';
+                var labelValue = padVaule + noteValue.toFixed(2) + " Hz";
+                this.ui.setValue({
+                    elementID : 'freqLabel',
+                    slot : 'labelvalue',
+                    value : labelValue
+                });
                 this.ui.refresh();
             }.bind(this),
             isListening : true
@@ -249,9 +288,18 @@ define(['require', 'github:janesconference/KievII@0.6.0/kievII'], function(requi
                 left: 178,
                 top: 57,
                 onValueSet : function(slot, value, element) {
-                    this.pluginState[element] = value;            
+                    this.pluginState[element] = value;
                     var voiceValue = Math.round(K2.MathUtils.linearRange(0, 1, 1, 40, value));
                     this.voiceCallback (voiceValue);
+
+                    var padVaule = (voiceValue >= 10) ? '' : ' ';
+                    var voiceString = (voiceValue === 1) ? ' Voice' : ' Voices';
+                    var labelValue = padVaule + voiceValue + voiceString;
+                    this.ui.setValue({
+                        elementID : 'voiceLabel',
+                        slot : 'labelvalue',
+                        value : labelValue
+                    });
                     this.ui.refresh();
                 }.bind(this),
                 isListening : true
@@ -298,7 +346,8 @@ define(['require', 'github:janesconference/KievII@0.6.0/kievII'], function(requi
         }.bind(this);
         
         require (['./assets/images/knob_60_60_61f.png!image',
-                  './assets/images/MDDDeck.png!image'],
+                  './assets/images/MDDDeck.png!image',
+                  '#google VT323 !font'],
             function () {
                 var resources = arguments;
                 pluginFunction.call (this, args, resources);
