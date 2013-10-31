@@ -325,7 +325,7 @@ define(['require', 'github:janesconference/KievII@0.6.0/kievII'], function(requi
         var saveState = function () {
             return { data: this.pluginState };
         };
-        args.hostInterface.setSaveState (saveState);
+        args.hostInterface.setSaveState (saveState.bind(this));
 
         // Initialization made it so far: plugin is ready.
         args.hostInterface.setInstanceStatus ('ready');
@@ -342,7 +342,7 @@ define(['require', 'github:janesconference/KievII@0.6.0/kievII'], function(requi
         var requireErr = function (err) {
             var failedId = err.requireModules && err.requireModules[0];
             requirejs.undef(failedId);
-            args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
+            args.hostInterface.setInstanceStatus ('fatal', {description: 'Error loading plugin resources'});
         }.bind(this);
         
         require (['./assets/images/knob_60_60_61f.png!image',
