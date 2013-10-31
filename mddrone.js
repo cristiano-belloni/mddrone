@@ -325,7 +325,7 @@ define(['require', 'github:janesconference/KievII@0.6.0/kievII'], function(requi
         var saveState = function () {
             return { data: this.pluginState };
         };
-        args.hostInterface.setSaveState (saveState.bind(this));
+        args.hostInterface.setSaveState (saveState.bind (this));
 
         // Initialization made it so far: plugin is ready.
         args.hostInterface.setInstanceStatus ('ready');
