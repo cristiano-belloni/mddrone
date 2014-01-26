@@ -5,7 +5,8 @@ define(['require', 'github:janesconference/KievII@0.6.0/kievII'], function(requi
         osc: false,
         audioOut: 1,
         audioIn: 0,
-        version: '0.0.1-alpha1',
+        version: '0.0.1',
+	hyaId: 'MDDrone',
         ui: {
             type: 'canvas',
             width: 274,
