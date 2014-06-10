@@ -69,7 +69,7 @@ define(['require', 'github:janesconference/KievII@0.6.0/kievII'], function(requi
         this.nOsc = 14;
         
         //connect gain
-        this.gainNode = this.context.createGainNode();
+        this.gainNode = this.context.createGain();
         this.gainNode.gain.value = 15.0;
         this.gainNode.connect(this.audioDestination);
         
