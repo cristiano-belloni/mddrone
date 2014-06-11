@@ -93,7 +93,7 @@ define(['require', 'github:janesconference/KievII@0.6.0/kievII'], function(requi
           filter.Q.value = 150;
           filter.connect(this.panner);
         
-          var noiseSource = this.context.createJavaScriptNode(this.bufferLen, 1, 2);
+          var noiseSource = this.context.createScriptProcessor(this.bufferLen, 1, 2);
           noiseSource.onaudioprocess = function (e) {
             var outBufferL = e.outputBuffer.getChannelData(0);
             var outBufferR = e.outputBuffer.getChannelData(1);
